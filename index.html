@@ -622,12 +622,27 @@
             btn.textContent = '⏳ 截圖中...';
 
             try {
+                // 等字型載入完成
+                await document.fonts.ready;
+
                 const card = document.getElementById('magnet-card');
+
                 const canvas = await html2canvas(card, {
                     scale: 3,
-                    useCORS: true,
+                    useCORS: false,
                     allowTaint: true,
-                    backgroundColor: null
+                    foreignObjectRendering: false,
+                    logging: false,
+                    onclone: (doc) => {
+                        doc.querySelectorAll('img').forEach(img => {
+                            if (img.src.startsWith('data:')) return;
+                            const c = document.createElement('canvas');
+                            c.width = img.naturalWidth || img.width;
+                            c.height = img.naturalHeight || img.height;
+                            c.getContext('2d').drawImage(img, 0, 0);
+                            try { img.src = c.toDataURL(); } catch(e) {}
+                        });
+                    }
                 });
 
                 const issuer = document.getElementById('inp-issuer').value.trim() || 'unknown';
@@ -645,9 +660,10 @@
                     btn.textContent = '💾 下載卡片';
                 }, 2000);
             } catch (e) {
+                console.error(e);
                 btn.disabled = false;
                 btn.textContent = '💾 下載卡片';
-                alert('截圖失敗，請稍後再試。');
+                alert('截圖失敗：' + e.message);
             }
         }
     </script>
