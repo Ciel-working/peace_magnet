@@ -621,8 +621,11 @@
             btn.disabled = true;
             btn.textContent = '⏳ 截圖中...';
 
+            // 先在截圖前把值讀好
+            const issuer = document.getElementById('inp-issuer').value.trim() || 'unknown';
+            const receiver = document.getElementById('inp-receiver').value.trim() || 'unknown';
+
             try {
-                // 等字型載入完成
                 await document.fonts.ready;
 
                 const card = document.getElementById('magnet-card');
@@ -645,10 +648,7 @@
                     }
                 });
 
-                const issuer = document.getElementById('inp-issuer').value.trim() || 'unknown';
-                const receiver = document.getElementById('inp-receiver').value.trim() || 'unknown';
                 const filename = `peace_magnet_${issuer}_${receiver}.png`;
-
                 const a = document.createElement('a');
                 a.href = canvas.toDataURL('image/png');
                 a.download = filename;
