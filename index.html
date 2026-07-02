@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>和平兌換券</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -448,7 +447,6 @@
                     </div>
                 </div>
 
-                <button onclick="downloadCard()" id="download-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-lg text-sm transition">💾 下載卡片</button>
                 <!-- <button onclick="window.print()"
                     class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 rounded-lg text-sm transition">
                     🖨 列印
@@ -525,9 +523,11 @@
                     <div class="tag">-</div>
                     <div class="tag write-bg" id="disp-issuer">L413</div>
                     <div class="tag">-</div>
-                    <div class="tag write-bg" id="disp-receiver">L398</div>
+                    <!-- <div class="tag write-bg" id="disp-receiver">L398</div> -->
+                    <div class="tag write-bg" id="disp-receiver">&emsp;&emsp;&nbsp;</div>
                 </div>
-                <div class="date-txt write-bg" id="disp-date">2026.06.29</div>
+                <!-- <div class="date-txt write-bg" id="disp-date">2026.06s.29</div> -->
+                <div class="date-txt write-bg" id="disp-date">&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;</div>
             </div>
         </div>
     </div>
@@ -614,57 +614,6 @@
                 document.getElementById('btn-' + k).classList.toggle('active', k === t);
             });
             document.getElementById('theme-label').textContent = themeLabels[t] || t;
-        }
-
-        async function downloadCard() {
-            const btn = document.getElementById('download-btn');
-            btn.disabled = true;
-            btn.textContent = '⏳ 截圖中...';
-
-            // 先在截圖前把值讀好
-            const issuer = document.getElementById('inp-issuer').value.trim() || 'unknown';
-            const receiver = document.getElementById('inp-receiver').value.trim() || 'unknown';
-
-            try {
-                await document.fonts.ready;
-
-                const card = document.getElementById('magnet-card');
-
-                const canvas = await html2canvas(card, {
-                    scale: 3,
-                    useCORS: false,
-                    allowTaint: true,
-                    foreignObjectRendering: false,
-                    logging: false,
-                    onclone: (doc) => {
-                        doc.querySelectorAll('img').forEach(img => {
-                            if (img.src.startsWith('data:')) return;
-                            const c = document.createElement('canvas');
-                            c.width = img.naturalWidth || img.width;
-                            c.height = img.naturalHeight || img.height;
-                            c.getContext('2d').drawImage(img, 0, 0);
-                            try { img.src = c.toDataURL(); } catch(e) {}
-                        });
-                    }
-                });
-
-                const filename = `peace_magnet_${issuer}_${receiver}.png`;
-                const a = document.createElement('a');
-                a.href = canvas.toDataURL('image/png');
-                a.download = filename;
-                a.click();
-
-                btn.textContent = '✅ 下載成功！';
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.textContent = '💾 下載卡片';
-                }, 2000);
-            } catch (e) {
-                console.error(e);
-                btn.disabled = false;
-                btn.textContent = '💾 下載卡片';
-                alert('截圖失敗：' + e.message);
-            }
         }
     </script>
 </body>
